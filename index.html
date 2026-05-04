@@ -359,6 +359,8 @@
       .review-section { padding: 16px 12px; }
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -597,19 +599,32 @@
 
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNQ5GKyCeCARRl8A1inb6RPSmgHsztBklURk4AZlN7x5aLiigBWap35lfiJxLtpFq_dg/exec';
-    const OPS_SYNC_URL    = 'PASTE_YOUR_OPS_SYNC_URL_HERE';
-    const OPS_SYNC_SECRET = 'coffeebeats2026';
+
+    const _fb = firebase.initializeApp({
+      apiKey: "AIzaSyA9fMlRqhrCMsXHdj1JYd2EM3yOmai2VAA",
+      authDomain: "coffeebeats-79200.firebaseapp.com",
+      projectId: "coffeebeats-79200",
+      storageBucket: "coffeebeats-79200.firebasestorage.app",
+      messagingSenderId: "1046768234777",
+      appId: "1:1046768234777:web:ca6193791030e2fbde5588"
+    });
+    const reviewsDb = firebase.firestore();
 
     async function loadBaristas() {
-      if (!OPS_SYNC_URL || OPS_SYNC_URL.includes('PASTE_YOUR')) return;
       try {
-        const res = await fetch(OPS_SYNC_URL + '?action=get_baristas');
-        const data = await res.json();
-        if (data.ok && Array.isArray(data.baristas) && data.baristas.length) {
-          const sel = document.getElementById('barista');
-          sel.innerHTML = '<option value="">— Select a barista —</option>';
-          data.baristas.forEach(name => { const opt = document.createElement('option'); opt.value = opt.textContent = name; sel.appendChild(opt); });
-        }
+        const snap = await reviewsDb.collection("staff_public")
+          .where("active", "==", true)
+          .get();
+        const baristas = [];
+        snap.forEach(doc => {
+          const u = doc.data();
+          if (u.role === 'barista' || u.role === 'head_barista') baristas.push(u.name);
+        });
+        if (!baristas.length) return;
+        baristas.sort();
+        const sel = document.getElementById('barista');
+        sel.innerHTML = '<option value="">— Select a barista —</option>';
+        baristas.forEach(name => { const opt = document.createElement('option'); opt.value = opt.textContent = name; sel.appendChild(opt); });
       } catch (_) {}
     }
 
@@ -651,12 +666,19 @@
       e.preventDefault();
       const btn = document.getElementById('feedbackBtn'), errorNote = document.getElementById('reviewError');
       btn.textContent = 'Sending…'; btn.disabled = true; errorNote.style.display = 'none';
-      const payload = { type:'feedback', timestamp: new Date().toISOString(), branch: selectedBranch, rating: selectedRating ?? '', ratingLabel: selectedRatingLabel, barista: document.getElementById('barista').value, standout: Array.from(selectedStandout).join(', '), feedback: document.getElementById('openFeedback').value.trim() };
       try {
-        await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-        if (OPS_SYNC_URL && !OPS_SYNC_URL.includes('PASTE_YOUR')) {
-          fetch(OPS_SYNC_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ secret: OPS_SYNC_SECRET, action:'customer_feedback', data:{ barista_name: payload.barista, branch: payload.branch, rating: payload.rating, rating_label: payload.ratingLabel, standout: payload.standout, feedback: payload.feedback } }) }).catch(()=>{});
-        }
+        const at = Date.now();
+        await reviewsDb.collection("reviews").add({
+          at,
+          timestamp: new Date(at).toISOString(),
+          branch: selectedBranch,
+          rating: selectedRating ?? 0,
+          ratingLabel: selectedRatingLabel,
+          barista: document.getElementById('barista').value,
+          standout: Array.from(selectedStandout).join(', '),
+          feedback: document.getElementById('openFeedback').value.trim(),
+          source: "coffeebeats.art"
+        });
         document.getElementById('reviewFormWrap').style.display = 'none';
         document.getElementById('reviewThankyou').style.display = 'block';
       } catch (err) { btn.textContent = 'Submit Feedback'; btn.disabled = false; errorNote.style.display = 'block'; }
