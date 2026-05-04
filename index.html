@@ -598,8 +598,6 @@
   </footer>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNQ5GKyCeCARRl8A1inb6RPSmgHsztBklURk4AZlN7x5aLiigBWap35lfiJxLtpFq_dg/exec';
-
     const _fb = firebase.initializeApp({
       apiKey: "AIzaSyA9fMlRqhrCMsXHdj1JYd2EM3yOmai2VAA",
       authDomain: "coffeebeats-79200.firebaseapp.com",
@@ -633,7 +631,7 @@
       const btn = document.getElementById('signupBtn'), input = document.getElementById('emailInput'), note = document.getElementById('signupNote');
       btn.textContent = 'Sending…'; btn.disabled = true; input.disabled = true;
       try {
-        await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'email', email: input.value.trim() }) });
+        await reviewsDb.collection("email_subscribers").add({ email: input.value.trim(), source: 'website', submitted_at: firebase.firestore.FieldValue.serverTimestamp() });
         btn.textContent = '✓ You\'re in'; btn.style.background = '#9AA0A1';
         note.textContent = 'Welcome to the family. We\'ll be in touch soon.';
       } catch (err) {
