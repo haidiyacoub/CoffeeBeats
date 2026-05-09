@@ -420,22 +420,19 @@
 
               <div class="form-divider"></div>
 
-              <div class="form-block">
+              <div class="form-block" id="baristaSelectWrap">
                 <label class="form-label" for="barista">Who served you today?</label>
                 <div class="select-wrap">
                   <select id="barista" name="barista">
-                    <option value="">— Select a barista —</option>
-                    <option value="Yasmine">Yasmine</option>
-                    <option value="Omar">Omar</option>
-                    <option value="Nour">Nour</option>
-                    <option value="Ahmed">Ahmed</option>
-                    <option value="Dina">Dina</option>
-                    <option value="Karim">Karim</option>
-                    <option value="Mariam">Mariam</option>
-                    <option value="Tarek">Tarek</option>
+                    <option value="">— Loading team… —</option>
                   </select>
                   <div class="select-chevron" aria-hidden="true"></div>
                 </div>
+              </div>
+              <!-- Fallback shown only when Firestore is unreachable -->
+              <div class="form-block" id="baristaInputWrap" style="display:none">
+                <label class="form-label" for="baristaText">Who served you today?</label>
+                <input type="text" id="baristaText" name="baristaText" placeholder="Type their name…" style="width:100%;padding:8px 12px;font-family:'Montserrat',sans-serif;font-size:11px;background:rgba(255,255,255,0.7);border:1.5px solid rgba(51,51,51,0.14);border-radius:2px;color:var(--dark);outline:none;" />
               </div>
 
               <div class="form-divider"></div>
@@ -603,8 +600,6 @@
   </footer>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNQ5GKyCeCARRl8A1inb6RPSmgHsztBklURk4AZlN7x5aLiigBWap35lfiJxLtpFq_dg/exec';
-
     const _fb = firebase.initializeApp({
       apiKey: "AIzaSyA9fMlRqhrCMsXHdj1JYd2EM3yOmai2VAA",
       authDomain: "coffeebeats-79200.firebaseapp.com",
@@ -625,12 +620,19 @@
           const u = doc.data();
           if (u.role === 'barista' || u.role === 'head_barista') baristas.push(u.name);
         });
-        if (!baristas.length) return;
-        baristas.sort();
         const sel = document.getElementById('barista');
+        if (!baristas.length) {
+          document.getElementById('baristaSelectWrap').style.display = 'none';
+          document.getElementById('baristaInputWrap').style.display = '';
+          return;
+        }
+        baristas.sort();
         sel.innerHTML = '<option value="">— Select a barista —</option>';
         baristas.forEach(name => { const opt = document.createElement('option'); opt.value = opt.textContent = name; sel.appendChild(opt); });
-      } catch (_) {}
+      } catch (_) {
+        document.getElementById('baristaSelectWrap').style.display = 'none';
+        document.getElementById('baristaInputWrap').style.display = '';
+      }
     }
 
     async function handleSignup(e) {
@@ -638,7 +640,7 @@
       const btn = document.getElementById('signupBtn'), input = document.getElementById('emailInput'), note = document.getElementById('signupNote');
       btn.textContent = 'Sending…'; btn.disabled = true; input.disabled = true;
       try {
-        await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'email', email: input.value.trim() }) });
+        await reviewsDb.collection("email_subscribers").add({ email: input.value.trim(), source: 'website', submitted_at: firebase.firestore.FieldValue.serverTimestamp() });
         btn.textContent = '✓ You\'re in'; btn.style.background = '#9AA0A1';
         note.textContent = 'Welcome to the family. We\'ll be in touch soon.';
       } catch (err) {
@@ -667,6 +669,15 @@
       else { chip.classList.add('selected'); chip.setAttribute('aria-pressed','true'); selectedStandout.add(val); }
     }
 
+    function getBaristaValue() {
+      const selectWrap = document.getElementById('baristaSelectWrap');
+      if (selectWrap && selectWrap.style.display !== 'none') {
+        return document.getElementById('barista').value;
+      }
+      return document.getElementById('baristaText')?.value?.trim() || '';
+    }
+
+
     async function handleFeedback(e) {
       e.preventDefault();
       const btn = document.getElementById('feedbackBtn'), errorNote = document.getElementById('reviewError');
@@ -679,7 +690,7 @@
           branch: selectedBranch,
           rating: selectedRating ?? 0,
           ratingLabel: selectedRatingLabel,
-          barista: document.getElementById('barista').value,
+          barista: getBaristaValue(),
           standout: Array.from(selectedStandout).join(', '),
           feedback: document.getElementById('openFeedback').value.trim(),
           source: "coffeebeats.art"
@@ -703,6 +714,7 @@
       }, 4000);
     })();
   </script>
+
 
 </body>
 </html>
