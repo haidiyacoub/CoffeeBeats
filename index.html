@@ -32,12 +32,36 @@
 
     html { scroll-behavior: smooth; }
 
+    #home, #review, #menu, #events, #locations, #story, #join { scroll-margin-top: 56px; }
+
     body {
       font-family: 'Montserrat', sans-serif;
       background: var(--lightgrey);
       color: var(--dark);
       overflow-x: hidden;
     }
+
+    /* ─── SITE NAV ─────────────────────────────────────────── */
+    .site-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: center;
+      gap: clamp(10px,2vw,28px);
+      padding: 14px 20px;
+      background: rgba(239,236,229,0.88);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(51,51,51,0.08);
+      flex-wrap: wrap;
+    }
+
+    .site-nav a {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--dark);
+      text-decoration: none; white-space: nowrap;
+      padding: 4px 2px; border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .site-nav a:hover, .site-nav a:focus-visible { color: var(--peach); border-color: var(--peach); }
 
     /* ─── HERO ─────────────────────────────────────────────── */
     .hero {
@@ -347,12 +371,13 @@
     .join-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(239,187,163,0.28) 0%, transparent 65%); pointer-events: none; }
     .join-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.38em; color: var(--peach); text-transform: uppercase; margin-bottom: 14px; position: relative; z-index: 1; }
     .join-title { font-size: clamp(26px,4.5vw,52px); font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dark); line-height: 1.05; margin-bottom: 10px; position: relative; z-index: 1; }
-    .join-subtitle { font-size: clamp(13px,1.8vw,16px); font-weight: 300; color: var(--mid); letter-spacing: 0.06em; margin-bottom: 40px; position: relative; z-index: 1; }
+    .join-subtitle { font-size: clamp(13px,1.8vw,16px); font-weight: 300; color: var(--mid); letter-spacing: 0.06em; margin-bottom: 14px; position: relative; z-index: 1; }
+    .join-tagline { font-size: clamp(14px,2vw,18px); font-weight: 700; color: var(--peach); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 40px; position: relative; z-index: 1; }
     .signup-wrap { position: relative; z-index: 1; }
-    .signup-form { display: flex; gap: 0; max-width: 440px; margin: 0 auto; }
-    .signup-form input { flex: 1; padding: 16px 20px; font-family: 'Montserrat', sans-serif; font-size: 13px; background: rgba(255,255,255,0.85); border: 1px solid rgba(51,51,51,0.18); border-right: none; color: var(--dark); outline: none; border-radius: 2px 0 0 2px; letter-spacing: 0.05em; }
+    .signup-form { display: flex; flex-direction: column; gap: 10px; max-width: 440px; margin: 0 auto; }
+    .signup-form input { width: 100%; padding: 16px 20px; font-family: 'Montserrat', sans-serif; font-size: 13px; background: rgba(255,255,255,0.85); border: 1px solid rgba(51,51,51,0.18); border-radius: 2px; color: var(--dark); outline: none; letter-spacing: 0.05em; }
     .signup-form input::placeholder { color: var(--slate); }
-    .signup-form button { padding: 16px 24px; background: var(--dark); color: var(--white); border: none; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; border-radius: 0 2px 2px 0; transition: background 0.2s; white-space: nowrap; }
+    .signup-form button { padding: 16px 24px; background: var(--dark); color: var(--white); border: none; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: background 0.2s; }
     .signup-form button:hover { background: #555; }
     .signup-note { margin-top: 12px; font-size: 10px; color: var(--slate); letter-spacing: 0.08em; position: relative; z-index: 1; }
 
@@ -383,26 +408,59 @@
 </head>
 <body>
 
+  <!-- ── SITE NAV ──────────────────────────────────────────── -->
+  <nav class="site-nav" aria-label="Page sections">
+    <a href="#home">Home</a>
+    <a href="#menu">Menu</a>
+    <a href="#review">Spill the Tea</a>
+    <a href="#events">Events</a>
+    <a href="#locations">Locations</a>
+    <a href="#story">Lady Moka</a>
+    <a href="#join">Beat With Us</a>
+  </nav>
+
   <!-- ── HERO ──────────────────────────────────────────────── -->
-  <section class="hero">
+  <section class="hero" id="home">
     <img src="coffee-beats-logo.png" alt="Coffee Beats" class="hero-logo" />
     <h1 class="hero-tagline">Specialty Coffee <span>for Creators</span></h1>
     <p class="hero-sub">Specialty coffee for filmmakers, artists, and creators.<br />Every cup crafted with precision, served wherever stories are told and art unfolds.</p>
-    <a href="#review" class="scroll-cta">
+    <a href="#menu" class="scroll-cta">
       <span>Explore</span>
       <div class="scroll-arrow"></div>
     </a>
   </section>
 
-  <!-- ── REVIEW + MENU SHOWCASE ────────────────────────────── -->
+  <!-- ── MENU ──────────────────────────────────────────────── -->
+  <section class="menu-section" id="menu">
+    <p class="section-label">Our Offering</p>
+    <h2 class="section-title">The Menu</h2>
+    <div class="menu-image-wrap">
+      <img src="Coffee Beats Menu 2026 Nov.png" alt="Coffee Beats Menu 2026" />
+    </div>
+    <p class="menu-note">All prices include taxes &nbsp;•&nbsp; No surprises &nbsp;•&nbsp; No plot twists</p>
+  </section>
+
+  <!-- ── INSTAGRAM BUTTON (just under menu) ──────────────────── -->
+  <div class="ig-bar">
+    <a href="https://www.instagram.com/coffeebeatscoffee/" target="_blank" rel="noopener noreferrer" class="ig-big-btn">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="5.5" stroke="white" stroke-width="1.8"/>
+        <circle cx="12" cy="12" r="4.2" stroke="white" stroke-width="1.8"/>
+        <circle cx="17.5" cy="6.5" r="1.1" fill="white"/>
+      </svg>
+      Follow @coffeebeatscoffee
+    </a>
+  </div>
+
+  <!-- ── REVIEW ──────────────────────────────────────────────── -->
   <section class="review-section" id="review">
     <div class="review-two-col">
 
       <!-- LEFT: feedback form -->
       <div class="review-col-form">
         <p class="section-label">Your Visit</p>
-        <h2 class="section-title">How Was Your Experience?</h2>
-        <p class="review-sub">Your honest feedback helps us get better every day. Under a minute.</p>
+        <h2 class="section-title">Spill the Tea</h2>
+        <p class="review-sub">We'd love to hear about your experience. Tell us how we did and help us make every visit even better.</p>
 
         <div class="review-card">
           <div id="reviewFormWrap">
@@ -490,28 +548,6 @@
     </div>
   </section>
 
-  <!-- ── INSTAGRAM BUTTON (just under review) ──────────────── -->
-  <div class="ig-bar">
-    <a href="https://www.instagram.com/coffeebeatscoffee/" target="_blank" rel="noopener noreferrer" class="ig-big-btn">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="2" y="2" width="20" height="20" rx="5.5" stroke="white" stroke-width="1.8"/>
-        <circle cx="12" cy="12" r="4.2" stroke="white" stroke-width="1.8"/>
-        <circle cx="17.5" cy="6.5" r="1.1" fill="white"/>
-      </svg>
-      Follow @coffeebeatscoffee
-    </a>
-  </div>
-
-  <!-- ── MENU ──────────────────────────────────────────────── -->
-  <section class="menu-section" id="menu">
-    <p class="section-label">Our Offering</p>
-    <h2 class="section-title">The Menu</h2>
-    <div class="menu-image-wrap">
-      <img src="Coffee Beats Menu 2026 50x70.png" alt="Coffee Beats Menu 2026" />
-    </div>
-    <p class="menu-note">All prices include taxes &nbsp;•&nbsp; No surprises &nbsp;•&nbsp; No plot twists</p>
-  </section>
-
   <!-- ── NOW CASTING ────────────────────────────────────────── -->
   <section class="events-section" id="events">
     <p class="section-label">A Production by Lady Moka</p>
@@ -581,11 +617,14 @@
   <!-- ── JOIN / EMAIL COLLECTION ───────────────────────────── -->
   <section class="join-section" id="join">
     <p class="join-eyebrow">Welcome to the Beat</p>
-    <h2 class="join-title">Be Part of<br />Our Family</h2>
-    <p class="join-subtitle">Be the first to know about new drops, events, and creative collabs.</p>
+    <h2 class="join-title">Beat With Us</h2>
+    <p class="join-subtitle">Get rewarded every time you sip! Be the first to know about new drops, exclusive events, and exciting creative collabs.</p>
+    <p class="join-tagline">Sip. Earn. Repeat.</p>
     <div class="signup-wrap">
       <form class="signup-form" id="signupForm" onsubmit="handleSignup(event)">
-        <input type="email" id="emailInput" placeholder="your@email.com" required />
+        <input type="text" id="nameInput" placeholder="Your name" required />
+        <input type="tel" id="phoneInput" placeholder="Mobile number" required />
+        <input type="email" id="emailInput" placeholder="your@email.com (optional)" />
         <button type="submit" id="signupBtn">Join Us</button>
       </form>
       <p class="signup-note" id="signupNote">No spam. Just good coffee news.</p>
@@ -597,8 +636,8 @@
     <img src="coffee-beats-logo.png" alt="Coffee Beats" />
     <p class="footer-tagline">Specialty Coffee for Creators</p>
     <div class="footer-links">
-      <a href="#review">Leave a Review</a>
       <a href="#menu">Menu</a>
+      <a href="#review">Leave a Review</a>
       <a href="#events">Events</a>
       <a href="#locations">Locations</a>
       <a href="#story">Lady Moka</a>
@@ -649,14 +688,17 @@
 
     async function handleSignup(e) {
       e.preventDefault();
-      const btn = document.getElementById('signupBtn'), input = document.getElementById('emailInput'), note = document.getElementById('signupNote');
-      btn.textContent = 'Sending…'; btn.disabled = true; input.disabled = true;
+      const btn = document.getElementById('signupBtn'), nameInput = document.getElementById('nameInput'), input = document.getElementById('emailInput'), phoneInput = document.getElementById('phoneInput'), note = document.getElementById('signupNote');
+      btn.textContent = 'Sending…'; btn.disabled = true; nameInput.disabled = true; input.disabled = true; phoneInput.disabled = true;
       try {
-        await reviewsDb.collection("email_subscribers").add({ email: input.value.trim(), source: 'website', submitted_at: firebase.firestore.FieldValue.serverTimestamp() });
+        const signupData = { name: nameInput.value.trim(), phone: phoneInput.value.trim(), source: 'website', submitted_at: firebase.firestore.FieldValue.serverTimestamp() };
+        const email = input.value.trim();
+        if (email) signupData.email = email;
+        await reviewsDb.collection("email_subscribers").add(signupData);
         btn.textContent = '✓ You\'re in'; btn.style.background = '#9AA0A1';
         note.textContent = 'Welcome to the family. We\'ll be in touch soon.';
       } catch (err) {
-        btn.textContent = 'Try again'; btn.disabled = false; input.disabled = false;
+        btn.textContent = 'Try again'; btn.disabled = false; nameInput.disabled = false; input.disabled = false; phoneInput.disabled = false;
         note.textContent = 'Something went wrong — please retry.'; note.style.color = '#EFBBA3';
       }
     }

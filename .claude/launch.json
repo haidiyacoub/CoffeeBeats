@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "coffee-beats-site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8743", "--directory", "/Users/haidiyacoub/Documents/Claude/Projects/Coffee Beats Webiste", "--bind", "127.0.0.1"],
+      "port": 8743
+    }
+  ]
+}
